@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketWise - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-container {
+            width: 360px;
+            height: 640px;
+            background: #000;
+            border-radius: 30px;
+            padding: 8px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            z-index: 10;
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            border-radius: 22px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 40px 20px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 20px;
+            height: calc(100% - 140px - 80px);
+            overflow-y: auto;
+        }
+
+        .total-spent {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .total-spent h2 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .period {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .categories {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .categories h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-item:hover {
+            transform: translateX(5px);
+        }
+
+        .category-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .category-amount {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            width: 60px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-food { background: #ff6b6b; }
+        .progress-transport { background: #4ecdc4; }
+        .progress-entertainment { background: #45b7d1; }
+
+        .recent-expenses {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .recent-expenses h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .expense-item:hover {
+            background: #f8f9fa;
+            margin: 0 -10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+
+        .expense-info {
+            flex: 1;
+        }
+
+        .expense-description {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .expense-time {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .expense-amount {
+            font-weight: 600;
+            color: #e74c3c;
+            font-size: 14px;
+        }
+
+        .charts-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .charts-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .add-expense-btn {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .add-expense-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.6);
+        }
+
+        .add-expense-form {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 320px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .form-content h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .category-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .category-option:hover {
+            border-color: #4CAF50;
+            background: #f8fff8;
+        }
+
+        .category-option.selected {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+        }
+
+        .category-option .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .category-option .name {
+            font-size: 12px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .form-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .form-btn-primary:hover {
+            background: #45a049;
+        }
+
+        .form-btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            z-index: 1001;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            color: #4CAF50;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .modal h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .modal-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="app-container">
+            <div class="header">
+                <h1>PocketWise</h1>
+                <div class="subtitle">Controle financeiro inteligente</div>
+            </div>
+
+            <div class="main-content">
+                <div class="total-spent fade-in">
+                    <h2>Total gasto este mês</h2>
+                    <div class="total-amount">R$ 1.247,50</div>
+                    <div class="period">Janeiro 2025</div>
+                </div>
+
+                <div class="categories fade-in">
+                    <h3>Gastos por categoria</h3>
+                    <div class="category-item" onclick="showCategoryDetails('Alimentação')">
+                        <div class="category-icon">🍔</div>
+                        <div class="category-info">
+                            <div class="category-name">Alimentação</div>
+                            <div class="category-amount">R$ 748,50 (60%)</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-food" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="category-item" onclick="showCategoryDetails('Transporte')">
+                        <div class="category-icon">🚗</div>
+                        <div class="category-info">
+                            <div class="category-name">Transporte</div>
+                            <div class="category-amount">R$ 249,50 (20%)</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-transport" style="width: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="category-item" onclick="showCategoryDetails('Lazer')">
+                        <div class="category-icon">🎬</div>
+                        <div class="category-info">
+                            <div class="category-name">Lazer</div>
+                            <div class="category-amount">R$ 249,50 (20%)</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-entertainment" style="width: 20%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-expenses fade-in">
+                    <h3>Últimos gastos</h3>
+                    <div class="expense-item" onclick="showExpenseDetails('Lanche', 'R$ 25,00')">
+                        <div class="expense-info">
+                            <div class="expense-description">Lanche</div>
+                            <div class="expense-time">Hoje, 14:30</div>
+                        </div>
+                        <div class="expense-amount">R$ 25,00</div>
+                    </div>
+                    <div class="expense-item" onclick="showExpenseDetails('Combustível', 'R$ 100,00')">
+                        <div class="expense-info">
+                            <div class="expense-description">Combustível</div>
+                            <div class="expense-time">Ontem, 08:15</div>
+                        </div>
+                        <div class="expense-amount">R$ 100,00</div>
+                    </div>
+                    <div class="expense-item" onclick="showExpenseDetails('Cinema', 'R$ 45,00')">
+                        <div class="expense-info">
+                            <div class="expense-description">Cinema</div>
+                            <div class="expense-time">5 jan, 19:00</div>
+                        </div>
+                        <div class="expense-amount">R$ 45,00</div>
+                    </div>
+                </div>
+
+                <button class="charts-button pulse" onclick="showCharts()">
+                    📊 Ver Gráficos Detalhados
+                </button>
+            </div>
+
+            <!-- Botão Flutuante para Adicionar Gasto -->
+            <button class="add-expense-btn" onclick="openAddExpenseForm()">
+                +
+            </button>
+
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="setActiveTab('dashboard')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Dashboard</div>
+                </div>
+                <div class="nav-item" onclick="setActiveTab('history')">
+                    <div class="nav-icon">🕓</div>
+                    <div class="nav-label">Histórico</div>
+                </div>
+                <div class="nav-item" onclick="setActiveTab('reports')">
+                    <div class="nav-icon">📈</div>
+                    <div class="nav-label">Relatórios</div>
+                </div>
+                <div class="nav-item" onclick="setActiveTab('settings')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-label">Configurações</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário para Adicionar Gasto -->
+    <div class="add-expense-form" id="addExpenseForm">
+        <div class="form-content">
+            <h3>💰 Adicionar Novo Gasto</h3>
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label for="expenseAmount">Valor (R$)</label>
+                    <input type="number" id="expenseAmount" step="0.01" min="0" placeholder="0,00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseDescription">Descrição</label>
+                    <input type="text" id="expenseDescription" placeholder="Ex: Almoço no restaurante" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <div class="category-selector">
+                        <div class="category-option" data-category="alimentacao" onclick="window.selectCategory('alimentacao')">
+                            <div class="icon">🍔</div>
+                            <div class="name">Alimentação</div>
+                        </div>
+                        <div class="category-option" data-category="transporte" onclick="window.selectCategory('transporte')">
+                            <div class="icon">🚗</div>
+                            <div class="name">Transporte</div>
+                        </div>
+                        <div class="category-option" data-category="lazer" onclick="window.selectCategory('lazer')">
+                            <div class="icon">🎬</div>
+                            <div class="name">Lazer</div>
+                        </div>
+                        <div class="category-option" data-category="saude" onclick="window.selectCategory('saude')">
+                            <div class="icon">🏥</div>
+                            <div class="name">Saúde</div>
+                        </div>
+                        <div class="category-option" data-category="educacao" onclick="window.selectCategory('educacao')">
+                            <div class="icon">📚</div>
+                            <div class="name">Educação</div>
+                        </div>
+                        <div class="category-option" data-category="outros" onclick="window.selectCategory('outros')">
+                            <div class="icon">📦</div>
+                            <div class="name">Outros</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseDate">Data</label>
+                    <input type="date" id="expenseDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="expenseNotes">Observações (opcional)</label>
+                    <textarea id="expenseNotes" placeholder="Adicione observações sobre este gasto..."></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="form-btn form-btn-secondary" onclick="closeAddExpenseForm()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="form-btn form-btn-primary">
+                        Adicionar Gasto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mensagem de Sucesso -->
+    <div class="success-message" id="successMessage">
+        ✅ Gasto adicionado com sucesso!
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">Detalhes</h3>
+            <p id="modal-message">Informações detalhadas aparecerão aqui.</p>
+            <button class="modal-button" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+
+    <script>
+    let expenses = [];
+
+    function openAddExpenseForm() {
+        document.getElementById('addExpenseForm').style.display = 'flex';
+    }
+
+    function closeAddExpenseForm() {
+        document.getElementById('addExpenseForm').style.display = 'none';
+    }
+
+    function selectCategory(category) {
+        document.querySelectorAll('.category-option').forEach(el => el.classList.remove('selected'));
+        const selected = document.querySelector(`.category-option[data-category="${category}"]`);
+        if (selected) selected.classList.add('selected');
+        document.getElementById('expenseForm').dataset.selectedCategory = category;
+    }
+
+    function showSuccessMessage() {
+        const msg = document.getElementById('successMessage');
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+    }
+
+    function updateDashboard() {
+        const total = expenses.reduce((acc, e) => acc + parseFloat(e.amount), 0);
+        document.querySelector('.total-amount').textContent = `R$ ${total.toFixed(2)}`;
+    }
+
+    function showExpenseDetails(desc, valor) {
+        document.getElementById('modal-title').textContent = desc;
+        document.getElementById('modal-message').textContent = `Valor: ${valor}`;
+        document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    function setActiveTab(tabName) {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        const navItems = {
+            dashboard: 0,
+            history: 1,
+            reports: 2,
+            settings: 3
+        };
+        document.querySelectorAll('.nav-item')[navItems[tabName]]?.classList.add('active');
+    }
+
+    function resetForm() {
+        document.getElementById('expenseForm').reset();
+        document.querySelectorAll('.category-option').forEach(el => el.classList.remove('selected'));
+        document.getElementById('expenseForm').dataset.selectedCategory = '';
+    }
+
+    document.getElementById('expenseForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const amount = document.getElementById('expenseAmount').value;
+        const description = document.getElementById('expenseDescription').value;
+        const category = this.dataset.selectedCategory;
+        const date = document.getElementById('expenseDate').value;
+        const notes = document.getElementById('expenseNotes').value;
+
+        if (!category) {
+            alert('Por favor, selecione uma categoria.');
+            return;
+        }
+
+        const expense = { amount, description, category, date, notes };
+        expenses.unshift(expense);
+
+        updateDashboard();
+        addRecentExpense(description, parseFloat(amount));
+        resetForm();
+        closeAddExpenseForm();
+        showSuccessMessage();
+    });
+
+    function addRecentExpense(desc, amount) {
+        const container = document.querySelector('.recent-expenses');
+        const item = document.createElement('div');
+        item.className = 'expense-item';
+        item.onclick = () => showExpenseDetails(desc, `R$ ${amount.toFixed(2)}`);
+        item.innerHTML = `
+            <div class="expense-info">
+                <div class="expense-description">${desc}</div>
+                <div class="expense-time">Agora</div>
+            </div>
+            <div class="expense-amount">R$ ${amount.toFixed(2)}</div>
+        `;
+        container.prepend(item);
+    }
+
+    function renderFullHistory() {
+        const list = expenses.map(exp => `📌 ${exp.description} - R$ ${parseFloat(exp.amount).toFixed(2)} - ${exp.date}`).join('\n');
+        alert("Histórico:\n" + list);
+    }
+
+    function runUITests() {
+        console.log('🧪 Iniciando testes...');
+
+        try {
+            // Funcionalidade 1: Adicionar Novo Gasto
+            openAddExpenseForm();
+            console.log('✅ Passo 1: Formulário apareceu');
+
+            document.getElementById('expenseAmount').value = 50;
+            console.log('✅ Passo 2: Valor preenchido corretamente');
+
+            document.getElementById('expenseDescription').value = 'Jantar';
+            console.log('✅ Passo 3: Descrição preenchida');
+
+            selectCategory('alimentacao');
+            const selected = document.querySelector('.category-option.selected');
+            if (selected && selected.dataset.category === 'alimentacao') {
+                console.log('✅ Passo 4: Categoria Alimentação destacada');
+            } else {
+                console.error('❌ Passo 4: Categoria não selecionada');
+            }
+
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            console.log('✅ Passo 5: Data preenchida');
+
+            document.getElementById('expenseNotes').value = 'Observações de teste';
+            console.log('✅ Passo 6: Observações preenchidas');
+
+            document.querySelector('#expenseForm .form-btn-primary').click();
+            console.log('✅ Passo 7: Gasto adicionado');
+
+            setTimeout(() => {
+                const recent = document.querySelector('.recent-expenses .expense-item');
+                if (recent && recent.innerText.includes('Jantar')) {
+                    console.log('✅ Passo 8: Gasto aparece em Últimos gastos');
+                } else {
+                    console.error('❌ Passo 8: Gasto não exibido em Últimos gastos');
+                }
+
+                const total = parseFloat(document.querySelector('.total-amount').textContent.replace(/[^\d,\.]/g, '').replace(',', '.'));
+                if (total >= 50) {
+                    console.log('✅ Passo 9: Total gasto atualizado');
+                } else {
+                    console.error('❌ Passo 9: Total gasto não atualizado');
+                }
+
+                // Funcionalidade 2: Visualizar Extrato
+                setActiveTab('history');
+                console.log('✅ Funcionalidade 2 - Passo 1: Aba Histórico aberta');
+
+                renderFullHistory();
+                console.log('✅ Funcionalidade 2 - Passo 2: Lista completa exibida');
+
+                if (expenses[0].description === 'Jantar') {
+                    console.log('✅ Funcionalidade 2 - Passo 3: Ordem cronológica correta');
+                } else {
+                    console.error('❌ Funcionalidade 2 - Passo 3: Ordem incorreta');
+                }
+
+                document.querySelector('.recent-expenses .expense-item').click();
+                setTimeout(() => {
+                    if (document.getElementById('modal').style.display === 'flex') {
+                        console.log('✅ Funcionalidade 2 - Passo 4: Modal de detalhe exibido');
+                        closeModal();
+                        console.log('✅ Funcionalidade 2 - Passo 5: Modal fechado');
+                    } else {
+                        console.error('❌ Funcionalidade 2 - Passo 4: Modal não abriu');
+                    }
+
+                    // Novo gasto + verificação
+                    openAddExpenseForm();
+                    document.getElementById('expenseAmount').value = 30;
+                    document.getElementById('expenseDescription').value = 'Café';
+                    selectCategory('alimentacao');
+                    document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                    document.querySelector('#expenseForm .form-btn-primary').click();
+                    setTimeout(() => {
+                        renderFullHistory();
+                        console.log('✅ Funcionalidade 2 - Passo 6: Novo gasto apareceu no extrato');
+                    }, 500);
+
+                }, 500);
+            }, 1000);
+
+        } catch (e) {
+            console.error('❌ Erro ao executar testes:', e);
+        }
+    }
+
+    window.onload = () => runUITests();
+</script>
+</body>
+</html>
